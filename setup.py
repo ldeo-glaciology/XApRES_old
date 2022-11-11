@@ -4,19 +4,19 @@ with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='example_pypi_package',
-    author='Tom Chen',
-    author_email='tomchen.org@gmail.com',
-    description='Example PyPI (Python Package Index) Package',
-    keywords='example, pypi, package',
+    name='XApRES',
+    author='Jonathan Kingslake',
+    author_email='j.kingslake@columbia.edu',
+    description='A package for collecting data from the British Antarctic Surveys Autonomous Phase-Sensitive Radar (ApRES) in Xarrays and processing it',
+    keywords='ice, radar, xarray',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/tomchen/example_pypi_package',
+    url='https://github.com/ldeo-glaciology/XApRES',
     project_urls={
-        'Documentation': 'https://github.com/tomchen/example_pypi_package',
+        'Documentation': 'https://github.com/ldeo-glaciology/XApRES',
         'Bug Reports':
-        'https://github.com/tomchen/example_pypi_package/issues',
-        'Source Code': 'https://github.com/tomchen/example_pypi_package',
+        'https://github.com/ldeo-glaciology/XApRES/issues',
+        'Source Code': 'https://github.com/ldeo-glaciology/XApRES',
         # 'Funding': '',
         # 'Say Thanks!': '',
     },
