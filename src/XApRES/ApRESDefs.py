@@ -127,6 +127,7 @@ from tqdm import tqdm
 import glob
 import os
 import logging
+import time
 
 
 class xapres():
@@ -216,12 +217,11 @@ class xapres():
         
             list_of_multiBurstxarrays.append(multiBurstxarray)
             self.logger.debug(f"Finished processing file number {file_number}, {dat_filename}")
-        self.logger.debug(f"Concatenating all the multi-burst xarrays.")
+        self.logger.debug(f"Concatenating all the multi-burst xarrays to create xapres.data")
         # concatenate all the xarrays in the list along the time dimension
         self.data = xr.concat(list_of_multiBurstxarrays,dim='time')     
         
         self._add_attrs()
-        
         
         self.logger.debug(f"Finish call to load_all. Call xapres.data to see the xarray this produced.")
     
@@ -388,7 +388,7 @@ class xapres():
  
     def _add_attrs(self):
         """Add attributes to the xarray self.data"""
-        
+        self.logger.debug("Adding attributes to the xapres.data")
         self.data.time.attrs['long_name'] = 'time of burst'
         self.data.chirp_time.attrs['long_name'] = 'time of samples during chirps'
         self.data.chirp_time.attrs['name'] = 'time of samples during chirps'
@@ -433,13 +433,20 @@ class xapres():
         self.data.filename.attrs['description'] = 'the name of the file that contains each burst'
         self.data.burst_number.attrs['description'] = 'the number of each burst within each file'
         
+        self.data.attrs['time created'] = time.time
+
     def dB(self):
-        return 20*np.log10(np.abs(self.data.profile))
+        try:
+            decibels = 20*np.log10(np.abs(self.data.profile))
+        except AttributeError:
+            raise AttributeError("The xarray xapres.data does not yet exist, run xapres.load_all() to create it.")
+        
+        return decibels
     
     def _setup_logging(self,loglevel):
         numeric_level = getattr(logging, loglevel.upper(), None)
         if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
+            raise ValueError(f"Invalid log level: {loglevel}")
 
 
         self.logger = logging.getLogger("default_logger")
