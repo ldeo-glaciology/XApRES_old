@@ -127,7 +127,6 @@ from tqdm import tqdm
 import glob
 import os
 import logging
-import time
 
 
 class xapres():
@@ -433,13 +432,18 @@ class xapres():
         self.data.filename.attrs['description'] = 'the name of the file that contains each burst'
         self.data.burst_number.attrs['description'] = 'the number of each burst within each file'
         
-        self.data.attrs['time created'] = time.time
+        self.data.attrs['time created'] = pd.Timestamp.now()  
 
-    def dB(self):
-        try:
-            decibels = 20*np.log10(np.abs(self.data.profile))
-        except AttributeError:
-            raise AttributeError("The xarray xapres.data does not yet exist, run xapres.load_all() to create it.")
+    def dB(self, da):
+        '''Returns decibels from the DataArray, da, which needs be ApRES complex profile (or collection of them.'''
+        
+        decibels = 20*np.log10(np.abs(da))
+        
+        
+        #try:
+        #    decibels = 20*np.log10(np.abs(self.data.profile))
+        #except AttributeError:
+        #   raise AttributeError("The xarray xapres.data does not yet exist, run xapres.load_all() to create it.")
         
         return decibels
     
