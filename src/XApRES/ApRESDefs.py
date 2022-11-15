@@ -188,8 +188,6 @@ class xapres():
        
     
         ###### List files ######
-        
-        # find the dat files
         self.list_files(directory, remote_load)
         
         
@@ -248,8 +246,6 @@ class xapres():
             self.logger.debug(f"The burst numbers requested in bursts_to_process ({bursts_to_process}) is greater than the number of bursts in\
                 the dat file ({dat.NoBurstsInFile}), so we will just process all the bursts.")
             bursts_to_process = range(dat.NoBurstsInFile)
-        else:
-            bursts_to_process = bursts_selected
 
         self.logger.debug(f"bursts_to_process = {list(bursts_to_process)} after initial parse in _all_bursts_in_dat_to_xarray.")
 
