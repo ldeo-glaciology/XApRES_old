@@ -205,7 +205,7 @@ class xapres():
         ## loop through the dat files, putting individual xarrays in a list
         self.logger.debug("Starting loop over dat files")
         list_of_multiBurstxarrays = []   
-        for file_number, dat_filename in enumerate(self.dat_filenames_to_process):
+        for file_number, dat_filename in tqdm(enumerate(self.dat_filenames_to_process)):
             self.logger.debug(f"Load dat file number {file_number}, {dat_filename}")
 
             dat = self.load_dat_file(dat_filename,remote_load)
