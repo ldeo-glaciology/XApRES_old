@@ -229,6 +229,7 @@ class xapres():
         for dat_filename in self.dat_filenames_to_process:
             self.logger.debug(f"Load dat file {dat_filename}")
 
+
             dat = self.load_dat_file(dat_filename,remote_load)
             
             multiBurstxarray = self._all_bursts_in_dat_to_xarray(dat,bursts_to_process)
