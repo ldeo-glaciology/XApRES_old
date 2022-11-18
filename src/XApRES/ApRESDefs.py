@@ -127,6 +127,7 @@ from tqdm import tqdm
 import glob
 import os
 import logging
+from tqdm.notebook import trange, tqdm
 
 
 class xapres():
@@ -181,39 +182,61 @@ class xapres():
         return dat_filenames
        
     
-    def load_all(self, directory=None, remote_load=False, file_numbers_to_process = "All", bursts_to_process = "All"):
+    def load_all(self, directory=None, 
+                 remote_load=False, 
+                 file_numbers_to_process = None, 
+                 file_names_to_process = None, 
+                 bursts_to_process = "All"):
         """Put all the data from all the .DAT files found recursively in 'directory', in one xarray."""
+        
+        
         self.file_numbers_to_process = file_numbers_to_process
+        self.file_names_to_process_input = file_names_to_process_input
         #self.bursts_to_process = bursts_to_process
        
-    
         ###### List files ######
-        self.list_files(directory, remote_load)
-        
-        
+        self.list_files(directory, remote_load)    # adds self.dat_filenames
+    
+    
         ###### Subset files ######
-       
+        if file_numbers_to_process is not None and file_names_to_process_input is not None:
+            self.logger.debug("Throwing a ValueError because file_numbers_to_process and file_names_to_process cannot both be supplied to load_all)
+            raise ValueError("file_numbers_to_process and file_names_to_process cannot both be supplied to load_all. You need to supply just one (or neither) of these.") 
         
-        self.logger.debug(f"Subset files to {file_numbers_to_process}")
-        # choose which files to process (default is all of the files we found with list_files)
-        if file_numbers_to_process == "All":
-            self.dat_filenames_to_process = self.dat_filenames
-        else:
-            self.dat_filenames_to_process = [self.dat_filenames[i] for i in file_numbers_to_process]
-                
+        elif file_numbers_to_process is not None:
+            if file_numbers_to_process == "All":
+                self.logger.debug("Selecting all dats file because file_numbers_to_process == \"all\"")
+                self.dat_filenames_to_process = self.dat_filenames
+            else:
+                self.logger.debug(f"Subset files to {file_numbers_to_process}")
+                self.dat_filenames_to_process = [self.dat_filenames[i] for i in file_numbers_to_process]
+        
+        elif file_names_to_process_input is not None:
+            if file_names_to_process_input == "All":
+                self.logger.debug("Selecting all dats file because file_names_to_process_input == \"all\"")
+                self.dat_filenames_to_process = self.dat_filenames
+            else:                 
+                self.logger.debug("Subset files to list of files supplied in file_names_to_process")
+                self.dat_filenames_to_process = file_names_to_process_input
+                              
+        elif file_numbers_to_process is None and file_names_to_process_input is None:      # default is all the dat files    
+            self.logger.debug("Selecting all dats file because neither file_numbers_to_process nor file_names_to_process were supplied")
+            self.dat_filenames_to_process = self.dat_filenames          
         
         ## loop through the dat files, putting individual xarrays in a list
         self.logger.debug("Starting loop over dat files")
         list_of_multiBurstxarrays = []   
-        for file_number, dat_filename in tqdm(enumerate(self.dat_filenames_to_process)):
-            self.logger.debug(f"Load dat file number {file_number}, {dat_filename}")
+        for dat_filename in self.dat_filenames_to_process:
+            self.logger.debug(f"Load dat file {dat_filename}")
+
 
             dat = self.load_dat_file(dat_filename,remote_load)
             
             multiBurstxarray = self._all_bursts_in_dat_to_xarray(dat,bursts_to_process)
         
             list_of_multiBurstxarrays.append(multiBurstxarray)
-            self.logger.debug(f"Finished processing file number {file_number}, {dat_filename}")
+            self.logger.debug(f"Finished processing file {dat_filename}")
+        
         self.logger.debug(f"Concatenating all the multi-burst xarrays to create xapres.data")
         # concatenate all the xarrays in the list along the time dimension
         self.data = xr.concat(list_of_multiBurstxarrays,dim='time')     
@@ -253,7 +276,7 @@ class xapres():
         
         list_of_singleBurst_xarrays = []
 
-        for burst_number in tqdm(bursts_to_process):
+        for burst_number in bursts_to_process:#tqdm(bursts_to_process):
             self.logger.debug(f"Extract burst number {burst_number}")
             burst = dat.ExtractBurst(burst_number)
 
@@ -428,7 +451,7 @@ class xapres():
         self.data.filename.attrs['description'] = 'the name of the file that contains each burst'
         self.data.burst_number.attrs['description'] = 'the number of each burst within each file'
         
-        self.data.attrs['time created'] = pd.Timestamp.now()  
+        #self.data.attrs['time created'] = pd.Timestamp.now()  
 
     def dB(self, da):
         '''Returns decibels from the DataArray, da, which needs be ApRES complex profile (or collection of them.'''
