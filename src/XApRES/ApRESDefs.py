@@ -235,7 +235,7 @@ class xapres():
             multiBurstxarray = self._all_bursts_in_dat_to_xarray(dat,bursts_to_process)
         
             list_of_multiBurstxarrays.append(multiBurstxarray)
-            self.logger.debug(f"Finished processing file number {file_number}, {dat_filename}")
+            self.logger.debug(f"Finished processing file {dat_filename}")
         
         self.logger.debug(f"Concatenating all the multi-burst xarrays to create xapres.data")
         # concatenate all the xarrays in the list along the time dimension
@@ -451,7 +451,7 @@ class xapres():
         self.data.filename.attrs['description'] = 'the name of the file that contains each burst'
         self.data.burst_number.attrs['description'] = 'the number of each burst within each file'
         
-        self.data.attrs['time created'] = pd.Timestamp.now()  
+        #self.data.attrs['time created'] = pd.Timestamp.now()  
 
     def dB(self, da):
         '''Returns decibels from the DataArray, da, which needs be ApRES complex profile (or collection of them.'''
