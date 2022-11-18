@@ -191,7 +191,7 @@ class xapres():
         
         
         self.file_numbers_to_process = file_numbers_to_process
-        self.file_names_to_process_input = file_names_to_process_input
+        self.file_names_to_process = file_names_to_process
         #self.bursts_to_process = bursts_to_process
        
         ###### List files ######
@@ -199,8 +199,8 @@ class xapres():
     
     
         ###### Subset files ######
-        if file_numbers_to_process is not None and file_names_to_process_input is not None:
-            self.logger.debug("Throwing a ValueError because file_numbers_to_process and file_names_to_process cannot both be supplied to load_all)
+        if file_numbers_to_process is not None and file_names_to_process is not None:
+            self.logger.debug("Throwing a ValueError because file_numbers_to_process and file_names_to_process cannot both be supplied to load_all")
             raise ValueError("file_numbers_to_process and file_names_to_process cannot both be supplied to load_all. You need to supply just one (or neither) of these.") 
         
         elif file_numbers_to_process is not None:
@@ -211,15 +211,15 @@ class xapres():
                 self.logger.debug(f"Subset files to {file_numbers_to_process}")
                 self.dat_filenames_to_process = [self.dat_filenames[i] for i in file_numbers_to_process]
         
-        elif file_names_to_process_input is not None:
-            if file_names_to_process_input == "All":
-                self.logger.debug("Selecting all dats file because file_names_to_process_input == \"all\"")
+        elif file_names_to_process is not None:
+            if file_names_to_process == "All":
+                self.logger.debug("Selecting all dats file because file_names_to_process == \"all\"")
                 self.dat_filenames_to_process = self.dat_filenames
             else:                 
                 self.logger.debug("Subset files to list of files supplied in file_names_to_process")
-                self.dat_filenames_to_process = file_names_to_process_input
+                self.dat_filenames_to_process = file_names_to_process
                               
-        elif file_numbers_to_process is None and file_names_to_process_input is None:      # default is all the dat files    
+        elif file_numbers_to_process is None and file_names_to_process is None:      # default is all the dat files    
             self.logger.debug("Selecting all dats file because neither file_numbers_to_process nor file_names_to_process were supplied")
             self.dat_filenames_to_process = self.dat_filenames          
         
